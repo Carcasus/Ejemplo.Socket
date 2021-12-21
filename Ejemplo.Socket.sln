@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31710.8
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Socket.Cliente", "Socket.Cliente\Socket.Cliente.csproj", "{DD3D593D-1A0E-401D-8286-310F0CDF2A30}"
 EndProject
@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreriaDeDatos", "LibreriaDeDatos\LibreriaDeDatos.csproj", "{082AEEE5-F4C0-4024-8590-E510BC9EABC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +28,10 @@ Global
 		{D80133E8-230D-401D-8C65-F8D654BEEC01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D80133E8-230D-401D-8C65-F8D654BEEC01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D80133E8-230D-401D-8C65-F8D654BEEC01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{082AEEE5-F4C0-4024-8590-E510BC9EABC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{082AEEE5-F4C0-4024-8590-E510BC9EABC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{082AEEE5-F4C0-4024-8590-E510BC9EABC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{082AEEE5-F4C0-4024-8590-E510BC9EABC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,4 +5,7 @@
 		<FileUpgradeFlags>
 		</FileUpgradeFlags>
 	</PropertyGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\LibreriaDeDatos\LibreriaDeDatos.csproj" />
+	</ItemGroup>
 </Project>

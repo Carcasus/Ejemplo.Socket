@@ -40,7 +40,7 @@ namespace Calculator.Servidor
                     var cacheMenaje = new byte[4096];
                     int bytesMenaje = handler.Receive(cacheMenaje);
 
-                    if (bytesMenaje > 0)
+                    if (bytesMenaje > 0) //Comprueba que no llega un mensaje vacio
                     {
                         var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje);
 

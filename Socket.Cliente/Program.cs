@@ -14,10 +14,9 @@ namespace Calculator.Cliente
     {
         static void Main(string[] args)
         {
-
             String operador = "";
-            string operando1 = "";
-            string operando2 = "";
+            int operando1 = 0;
+            int operando2 = 0;
 
             int codigoFinal = 0;
             
@@ -28,12 +27,16 @@ namespace Calculator.Cliente
             if (operador == "add" || operador == "sub" || operador == "plus" || operador == "div")
             {
                 Console.WriteLine("Escriba ahora los dos valores numericos a tratar");
-                operando1 = Console.ReadLine();
-                operando2 = Console.ReadLine();
+                operando1 = int.Parse(Console.ReadLine());
+                operando2 = int.Parse(Console.ReadLine());
+
                 Operacion operacion = new Operacion
-                { operador1 = operando1,
+                {
+                    operador1 = operando1,
+                    operador2 = operando2,
+                    operacion = operador
                 };
-                var resultado = EnviaMensaje(operador, operando1, operando2);
+                var resultado = EnviaMensaje(operacion);
             }
             else
                 Console.WriteLine("Valores de operacion no validos");
@@ -46,32 +49,24 @@ namespace Calculator.Cliente
         {
             try
             {
-                double num1 = 0;
-                double num2 = 0;
-                if (!double.TryParse(operando1, out num1) || !double.TryParse(operando2, out num2))
+                int num1 = 0;
+                int num2 = 0;
+                if (!int.TryParse(operacion.operador1.ToString(), out num1) || !int.TryParse(operacion.operador2.ToString(), out num2))
                 {
                     Console.WriteLine("La operacion dara error por que los operandos no son numericos");
                 }
                 else
                 {
-                    // Connect to a Remote server
-                    // Get Host IP Address that is used to establish a connection
-                    // In this case, we get one IP address of localhost that is IP : 127.0.0.1
-                    // If a host has multiple addresses, you will get a list of addresses
-
                     IPHostEntry host = Dns.GetHostEntry("localhost");
-                    IPAddress ipAddress = host.AddressList[0];
+                    //IPAddress ipAddress = host.AddressList[0];
 
-                    //IPAddress ipAddress = IPAddress.Parse("192.168.100.126");
+                    IPAddress ipAddress = IPAddress.Parse("192.168.100.126");
 
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, 2800);
 
-                    // Create a TCP/IP  socket.
+                    // Creamos el socket por medio de TCP / IP
                     using Socket sender = new Socket(ipAddress.AddressFamily,
                         SocketType.Stream, ProtocolType.Tcp);
-
-                    // Connect the socket to the remote endpoint. Catch any errors.
-
                     try
                     {
                         // Connect to Remote EndPoint
@@ -83,12 +78,10 @@ namespace Calculator.Cliente
                         Console.WriteLine("Socket redad for {0}",
                             sender.LocalEndPoint.ToString());
 
-                        var cacheEnvioOperador = Encoding.UTF8.GetBytes(operador);
-                        var cacheEnvioOperando1 = Encoding.UTF8.GetBytes(operando1);
-                        var cacheEnvioOperando2 = Encoding.UTF8.GetBytes(operando2);
+                        var cacheEnvioOperacion = Encoding.UTF8.GetBytes(operacion.ToString());
 
                         // Send the data through the socket.
-                        int bytesSendOperador = sender.Send(cacheEnvioOperador); //Pasar el objeto serializado
+                        int bytesSendOperador = sender.Send(cacheEnvioOperacion); //Pasar el objeto serializado
 
                         // Receive the response from the remote device.
                         byte[] bufferRec = new byte[1024];

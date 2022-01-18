@@ -15,8 +15,8 @@ namespace Calculator.Cliente
         static void Main(string[] args)
         {
             String operador = "";
-            int operando1 = 0;
-            int operando2 = 0;
+            double operando1 = 0;
+            double operando2 = 0;
 
             int codigoFinal = 0;
             
@@ -24,19 +24,48 @@ namespace Calculator.Cliente
             Console.WriteLine("------------------------\n");
             operador = Console.ReadLine();
 
-            if (operador == "add" || operador == "sub" || operador == "plus" || operador == "div")
-            {
                 Console.WriteLine("Escriba ahora los dos valores numericos a tratar");
-                operando1 = int.Parse(Console.ReadLine());
-                operando2 = int.Parse(Console.ReadLine());
+                operando1 = double.Parse(Console.ReadLine());
+                operando2 = double.Parse(Console.ReadLine());
 
-                Operacion operacion = new Operacion
+            if (operador == "add"){
+                DatosOperacion operacion = new DatosOperacion
                 {
-                    operador1 = operando1,
-                    operador2 = operando2,
-                    operacion = operador
+                    Operador1 = operando1,
+                    Operador2 = operando2,
+                    operacion = TipoOperacion.Suma
                 };
-                var resultado = EnviaMensaje(operacion);
+                var resultado = EnviaMensajeAsync(operacion);
+            }
+            else if (operador == "sub")
+            {
+                DatosOperacion operacion = new DatosOperacion
+                {
+                    Operador1 = operando1,
+                    Operador2 = operando2,
+                    operacion = TipoOperacion.Resta
+                };
+                var resultado = EnviaMensajeAsync(operacion);
+            }
+            else if (operador == "plus")
+            {
+                DatosOperacion operacion = new DatosOperacion
+                {
+                    Operador1 = operando1,
+                    Operador2 = operando2,
+                    operacion = TipoOperacion.Multiplicacion
+                };
+                var resultado = EnviaMensajeAsync(operacion);
+            }
+            else if (operador == "div")
+            {
+                DatosOperacion operacion = new DatosOperacion
+                {
+                    Operador1 = operando1,
+                    Operador2 = operando2,
+                    operacion = TipoOperacion.Division
+                };
+                var resultado = EnviaMensajeAsync(operacion);
             }
             else
                 Console.WriteLine("Valores de operacion no validos");
@@ -45,13 +74,13 @@ namespace Calculator.Cliente
             Console.ReadKey();
         }
 
-        static string EnviaMensaje(Operacion operacion)
+        static async System.Threading.Tasks.Task<string> EnviaMensajeAsync(DatosOperacion operacion)
         {
             try
             {
-                int num1 = 0;
-                int num2 = 0;
-                if (!int.TryParse(operacion.operador1.ToString(), out num1) || !int.TryParse(operacion.operador2.ToString(), out num2))
+                double num1 = 0;
+                double num2 = 0;
+                if (!double.TryParse(operacion.Operador1.ToString(), out num1) || !double.TryParse(operacion.Operador2.ToString(), out num2))
                 {
                     Console.WriteLine("La operacion dara error por que los operandos no son numericos");
                 }
@@ -78,7 +107,9 @@ namespace Calculator.Cliente
                         Console.WriteLine("Socket redad for {0}",
                             sender.LocalEndPoint.ToString());
 
-                        var cacheEnvioOperacion = Encoding.UTF8.GetBytes(operacion.ToString());
+                        //Serializamos el objeto de la operacion para poder enviarlo por el socket
+                        string jsonString = JsonSerializer.Serialize(operacion);
+                        var cacheEnvioOperacion = Encoding.UTF8.GetBytes(jsonString);
 
                         // Send the data through the socket.
                         int bytesSendOperador = sender.Send(cacheEnvioOperacion); //Pasar el objeto serializado
@@ -87,8 +118,9 @@ namespace Calculator.Cliente
                         byte[] bufferRec = new byte[1024];
                         int bytesRec1 = sender.Receive(bufferRec);
 
+                        //Deserializamos el mensaje recibido
                         var resultado = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
-
+                        //var obj = await JsonSerializer.DeserializeAsync<T>(resultado);
                         // Release the socket.
                         sender.Shutdown(SocketShutdown.Both);
                         sender.Close();

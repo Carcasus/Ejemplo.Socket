@@ -42,6 +42,7 @@ namespace Calculator.Servidor
 
                     if (bytesMenaje > 0) //Comprueba que no llega un mensaje vacio
                     {
+
                         var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje);
 
                         var respuesta = "Ok: " + mensaje;

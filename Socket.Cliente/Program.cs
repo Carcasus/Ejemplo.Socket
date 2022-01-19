@@ -74,7 +74,7 @@ namespace Calculator.Cliente
             Console.ReadKey();
         }
 
-        static async System.Threading.Tasks.Task<string> EnviaMensajeAsync(DatosOperacion operacion)
+        static string EnviaMensajeAsync(DatosOperacion operacion)
         {
             try
             {
@@ -87,9 +87,9 @@ namespace Calculator.Cliente
                 else
                 {
                     IPHostEntry host = Dns.GetHostEntry("localhost");
-                    //IPAddress ipAddress = host.AddressList[0];
+                    IPAddress ipAddress = host.AddressList[0];
 
-                    IPAddress ipAddress = IPAddress.Parse("192.168.100.126");
+                    //IPAddress ipAddress = IPAddress.Parse("192.168.100.126");
 
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, 2800);
 
@@ -120,7 +120,6 @@ namespace Calculator.Cliente
 
                         //Deserializamos el mensaje recibido
                         var resultado = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
-                        //var obj = await JsonSerializer.DeserializeAsync<T>(resultado);
                         // Release the socket.
                         sender.Shutdown(SocketShutdown.Both);
                         sender.Close();

@@ -1,16 +1,22 @@
-﻿using System;
+﻿using LibreriaDeDatos;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Calculator.Servidor
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void  Main(string[] args)
         {
+
+            double resultado = 0;
+
             IPHostEntry host = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = host.AddressList[0];
 
@@ -32,26 +38,66 @@ namespace Calculator.Servidor
 
                 while (true)
                 {
+                    
                     Socket handler = listener.Accept();
 
                     Console.WriteLine("Socket connected to {0}",
                         handler.RemoteEndPoint.ToString());
 
                     var cacheMenaje = new byte[4096];
+                    
                     int bytesMenaje = handler.Receive(cacheMenaje);
 
                     if (bytesMenaje > 0) //Comprueba que no llega un mensaje vacio
                     {
-
                         var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje);
+                        var obj = JsonSerializer.Deserialize<DatosOperacion>(mensaje);
+                        
+                        if (obj.operacion.Equals(0)) //Revisar, no llega a entrar dentro de los IFS IMPORTANTE
+                        {
+                            resultado = obj.Operador1 + obj.Operador2;
+                            var respuesta = "La suma entre "+obj.Operador1+" y "+obj.Operador2+" daria como resultado = " + resultado;
 
-                        var respuesta = "Ok: " + mensaje;
+                            Console.WriteLine("{0} -> {1}", mensaje, respuesta);
 
-                        Console.WriteLine("{0} -> {1}", mensaje, respuesta);
+                            var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
+                            handler.Send(cacheRespuesta);
+                            Thread.Sleep(0);
+                        }
+                        else if (obj.operacion.Equals(1))
+                        {
+                            resultado = obj.Operador1 - obj.Operador2;
+                            var respuesta = "La resta entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
 
-                        var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
-                        handler.Send(cacheRespuesta);
-                        Thread.Sleep(0);
+                            Console.WriteLine("{0} -> {1}", mensaje, respuesta);
+
+                            var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
+                            handler.Send(cacheRespuesta);
+                            Thread.Sleep(0);
+                        }
+                        else if (obj.operacion.Equals(2))
+                        {
+                            resultado = obj.Operador1 * obj.Operador2;
+                            var respuesta = "La multiplicacion entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
+
+                            Console.WriteLine("{0} -> {1}", mensaje, respuesta);
+
+                            var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
+                            handler.Send(cacheRespuesta);
+                            Thread.Sleep(0);
+                        }
+                        else if (obj.operacion.Equals(3))
+                        {
+                            resultado = obj.Operador1 / obj.Operador2;
+                            var respuesta = "La division entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
+
+                            Console.WriteLine("{0} -> {1}", mensaje, respuesta);
+
+                            var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
+                            handler.Send(cacheRespuesta);
+                            Thread.Sleep(0);
+                        }
+                        
                     }
 
                     handler.Shutdown(SocketShutdown.Both);

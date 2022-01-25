@@ -50,10 +50,11 @@ namespace Calculator.Servidor
 
                     if (bytesMenaje > 0) //Comprueba que no llega un mensaje vacio
                     {
-                        var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje);
-                        var obj = JsonSerializer.Deserialize<DatosOperacion>(mensaje);
+                        var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje); 
+                        var obj = JsonSerializer.Deserialize<DatosOperacion>(mensaje); //Deserializamos el mensaje recibido del cliente
                         
-                        if (obj.operacion.Equals(0)) //Revisar, no llega a entrar dentro de los IFS IMPORTANTE
+                        //Pasan los datos a su if correspondiente y se hace la operacion
+                        if (obj.operacion == TipoOperacion.Suma)
                         {
                             resultado = obj.Operador1 + obj.Operador2;
                             var respuesta = "La suma entre "+obj.Operador1+" y "+obj.Operador2+" daria como resultado = " + resultado;
@@ -61,10 +62,10 @@ namespace Calculator.Servidor
                             Console.WriteLine("{0} -> {1}", mensaje, respuesta);
 
                             var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
-                            handler.Send(cacheRespuesta);
+                            handler.Send(cacheRespuesta); //Se envia la respuesta al cliente
                             Thread.Sleep(0);
                         }
-                        else if (obj.operacion.Equals(1))
+                        else if (obj.operacion == TipoOperacion.Resta)
                         {
                             resultado = obj.Operador1 - obj.Operador2;
                             var respuesta = "La resta entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
@@ -75,7 +76,7 @@ namespace Calculator.Servidor
                             handler.Send(cacheRespuesta);
                             Thread.Sleep(0);
                         }
-                        else if (obj.operacion.Equals(2))
+                        else if (obj.operacion == TipoOperacion.Multiplicacion)
                         {
                             resultado = obj.Operador1 * obj.Operador2;
                             var respuesta = "La multiplicacion entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
@@ -86,7 +87,7 @@ namespace Calculator.Servidor
                             handler.Send(cacheRespuesta);
                             Thread.Sleep(0);
                         }
-                        else if (obj.operacion.Equals(3))
+                        else if (obj.operacion == TipoOperacion.Division)
                         {
                             resultado = obj.Operador1 / obj.Operador2;
                             var respuesta = "La division entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;

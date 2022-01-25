@@ -18,7 +18,8 @@ namespace Calculator.Cliente
             double operando1 = 0;
             double operando2 = 0;
 
-            int codigoFinal = 0;
+            //Se ha de crear un objeto de resultado, para la comunicación del servidor al cliente.
+            var resultado= "";
             
             Console.WriteLine("Escriba la operacion a realizar (add, sub, plus o div):");
             Console.WriteLine("------------------------\n");
@@ -28,14 +29,16 @@ namespace Calculator.Cliente
                 operando1 = double.Parse(Console.ReadLine());
                 operando2 = double.Parse(Console.ReadLine());
 
+            //Una vez declarado el operador y los numeros operandos, se pasara a una de las cuatro opciones
             if (operador == "add"){
-                DatosOperacion operacion = new DatosOperacion
+                //Se ha de crear un objeto en el que se almacene los datos de la operación para comunicación del cliente al servidor
+                DatosOperacion operacion = new DatosOperacion 
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
                     operacion = TipoOperacion.Suma
                 };
-                var resultado = EnviaMensajeAsync(operacion);
+                resultado = EnviaMensajeAsync(operacion); //Se envia al metodo principal (y al cliente), el resultado tratado lo devolvera a esta linea y saldra del if
             }
             else if (operador == "sub")
             {
@@ -45,7 +48,7 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     operacion = TipoOperacion.Resta
                 };
-                var resultado = EnviaMensajeAsync(operacion);
+                resultado = EnviaMensajeAsync(operacion);
             }
             else if (operador == "plus")
             {
@@ -55,7 +58,7 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     operacion = TipoOperacion.Multiplicacion
                 };
-                var resultado = EnviaMensajeAsync(operacion);
+                resultado = EnviaMensajeAsync(operacion);
             }
             else if (operador == "div")
             {
@@ -65,17 +68,20 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     operacion = TipoOperacion.Division
                 };
-                var resultado = EnviaMensajeAsync(operacion);
+                resultado = EnviaMensajeAsync(operacion);
             }
             else
                 Console.WriteLine("Valores de operacion no validos");
 
+            Console.WriteLine("El resultado es " + resultado);
+            Console.WriteLine("___________________________________________________");
             Console.Write("Press any key to close the Calculator console app...");
             Console.ReadKey();
         }
 
         static string EnviaMensajeAsync(DatosOperacion operacion)
         {
+            var resultado = "";
             try
             {
                 double num1 = 0;
@@ -87,8 +93,8 @@ namespace Calculator.Cliente
                 else
                 {
                     IPHostEntry host = Dns.GetHostEntry("localhost");
-                    IPAddress ipAddress = host.AddressList[0];
-
+                    //Conectamos el cliente con el servidor, bien con el localhost o bien con una ip
+                    IPAddress ipAddress = host.AddressList[0]; 
                     //IPAddress ipAddress = IPAddress.Parse("192.168.100.126");
 
                     IPEndPoint remoteEP = new IPEndPoint(ipAddress, 2800);
@@ -119,7 +125,7 @@ namespace Calculator.Cliente
                         int bytesRec1 = sender.Receive(bufferRec);
 
                         //Deserializamos el mensaje recibido
-                        var resultado = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
+                        resultado = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
                         // Release the socket.
                         sender.Shutdown(SocketShutdown.Both);
                         sender.Close();
@@ -129,15 +135,15 @@ namespace Calculator.Cliente
                     }
                     catch (ArgumentNullException ane)
                     {
-                        Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+                        Console.WriteLine("Error, No se estan pasando los suficientes datos : {0}", ane.ToString());
                     }
                     catch (SocketException se)
                     {
-                        Console.WriteLine("SocketException : {0}", se.ToString());
+                        Console.WriteLine("Error en los sockets : {0}", se.ToString());
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                        Console.WriteLine("Error, Fallo inesperado : {0}", e.ToString());
                     }
                 }
             }
@@ -145,7 +151,7 @@ namespace Calculator.Cliente
             {
                 Console.WriteLine(e.ToString());
             }
-            return null;
+            return resultado;
         }
     }
 }

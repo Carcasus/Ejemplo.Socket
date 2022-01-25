@@ -18,7 +18,7 @@ namespace Calculator.Cliente
             double operando1 = 0;
             double operando2 = 0;
 
-            //Se ha de crear un objeto de resultado, para la comunicación del servidor al cliente.
+            
             var resultado= "";
             
             Console.WriteLine("Escriba la operacion a realizar (add, sub, plus o div):");
@@ -29,10 +29,21 @@ namespace Calculator.Cliente
                 operando1 = double.Parse(Console.ReadLine());
                 operando2 = double.Parse(Console.ReadLine());
 
-            //Una vez declarado el operador y los numeros operandos, se pasara a una de las cuatro opciones
-            if (operador == "add"){
-                //Se ha de crear un objeto en el que se almacene los datos de la operación para comunicación del cliente al servidor
-                DatosOperacion operacion = new DatosOperacion 
+            //Una vez declarado el operador y los numeros operandos, se pasara a una de las cuatro opciones en el metodo aparte
+            resultado = posiblesOperadores(operador, operando1, operando2, resultado);
+            
+            Console.WriteLine("El resultado es " + resultado);
+            Console.WriteLine("___________________________________________________");
+            Console.Write("Press any key to close the Calculator console app...");
+            Console.ReadKey();
+        }
+
+        private static string posiblesOperadores(string operador, double operando1, double operando2, string resultado)
+        {
+            if (operador == "add")
+            {
+                //Se ha de crear un objeto operacion, para la comunicación del servidor al cliente.
+                DatosOperacion operacion = new DatosOperacion
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
@@ -72,11 +83,7 @@ namespace Calculator.Cliente
             }
             else
                 Console.WriteLine("Valores de operacion no validos");
-
-            Console.WriteLine("El resultado es " + resultado);
-            Console.WriteLine("___________________________________________________");
-            Console.Write("Press any key to close the Calculator console app...");
-            Console.ReadKey();
+            return resultado;
         }
 
         static string EnviaMensajeAsync(DatosOperacion operacion)

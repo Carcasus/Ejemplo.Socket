@@ -28,13 +28,13 @@ namespace Calculator.Cliente
                 operando1 = double.Parse(Console.ReadLine());
                 operando2 = double.Parse(Console.ReadLine());
             }
-            catch (System.FormatException e)
+            catch (FormatException e)
             {
                 Console.WriteLine("Error. el valor introducido no es numerico" + e.ToString());
             }
 
             //Una vez declarado el operador y los numeros operandos, se pasara a una de las cuatro opciones en el metodo aparte
-            resultado = posiblesOperadores(operador, operando1, operando2, resultado);
+            resultado = PosiblesOperadores(operador, operando1, operando2, resultado);
 
             Console.WriteLine(resultado);
             Console.WriteLine("___________________________________________________");
@@ -42,7 +42,7 @@ namespace Calculator.Cliente
             Console.ReadKey();
         }
 
-        private static string posiblesOperadores(string operador, double operando1, double operando2, string resultado)
+        private static string PosiblesOperadores(string operador, double operando1, double operando2, string resultado)
         {
             if (operador == "add")
             {
@@ -51,7 +51,7 @@ namespace Calculator.Cliente
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
-                    operacion = TipoOperacion.Suma
+                    Operacion = TipoOperacion.Suma
                 };
                 resultado = EnviaMensajeAsync(operacion); //Se envia al metodo principal (y al cliente), el resultado tratado lo devolvera a esta linea y saldra del if
             }
@@ -61,7 +61,7 @@ namespace Calculator.Cliente
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
-                    operacion = TipoOperacion.Resta
+                    Operacion = TipoOperacion.Resta
                 };
                 resultado = EnviaMensajeAsync(operacion);
             }
@@ -71,7 +71,7 @@ namespace Calculator.Cliente
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
-                    operacion = TipoOperacion.Multiplicacion
+                    Operacion = TipoOperacion.Multiplicacion
                 };
                 resultado = EnviaMensajeAsync(operacion);
             }
@@ -81,7 +81,7 @@ namespace Calculator.Cliente
                 {
                     Operador1 = operando1,
                     Operador2 = operando2,
-                    operacion = TipoOperacion.Division
+                    Operacion = TipoOperacion.Division
                 };
                 resultado = EnviaMensajeAsync(operacion);
             }
@@ -106,7 +106,7 @@ namespace Calculator.Cliente
                 try
                 {
                     //Ponemos en metodo aparte toda la conexion (envio y recibimiento) del mensaje
-                    resultado = conexionServidor(sender, remoteEP, resultado, operacion); 
+                    resultado = ConexionServidor(sender, remoteEP, resultado, operacion); 
                 }
                 catch (ArgumentNullException ane)
                 {
@@ -128,7 +128,7 @@ namespace Calculator.Cliente
             return resultado;
         }
 
-        private static String conexionServidor(Socket sender, IPEndPoint remoteEP, string resultado, DatosOperacion operacion)
+        private static String ConexionServidor(Socket sender, IPEndPoint remoteEP, string resultado, DatosOperacion operacion)
         {
             // Connect to Remote EndPoint
             sender.Connect(remoteEP);
@@ -144,12 +144,11 @@ namespace Calculator.Cliente
             // Se envian los datos a traves del socket.
             int bytesSendOperador = sender.Send(cacheEnvioOperacion); //Pasar el objeto serializado
 
-            resultado = retornoDesdeServidor(sender, resultado); //Recibimos el resultado desde el servidor en este metodo
-
+            resultado = RetornoDesdeServidor(sender, resultado); //Recibimos el resultado desde el servidor en este metodo
             return resultado;
         }
 
-        private static String retornoDesdeServidor(Socket sender, string resultado)
+        private static String RetornoDesdeServidor(Socket sender, string resultado)
         {
             // Recibimos respuesta desde el servidor.
             byte[] bufferRec = new byte[1024];

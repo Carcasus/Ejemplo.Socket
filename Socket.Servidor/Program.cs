@@ -28,7 +28,7 @@ namespace Calculator.Servidor
                 Console.WriteLine("Waiting for a connection ..." + listener.LocalEndPoint.ToString());
                 while (true)
                 {
-                    tratamientoMensaje(listener, resultado);
+                    TratamientoMensaje(listener, resultado);
                 }
             }
             catch (Exception e)
@@ -39,7 +39,7 @@ namespace Calculator.Servidor
             Console.ReadKey();
         }
 
-        private static void tratamientoMensaje(Socket listener, double resultado)
+        private static void TratamientoMensaje(Socket listener, double resultado)
         {
             Socket handler = listener.Accept();
             Console.WriteLine("Socket connected to {0}",
@@ -52,38 +52,38 @@ namespace Calculator.Servidor
                 var mensaje = Encoding.UTF8.GetString(cacheMenaje, 0, bytesMenaje);
                 var obj = JsonSerializer.Deserialize<DatosOperacion>(mensaje); //Deserializamos el mensaje recibido del cliente
 
-                respuesta = hacerLaOperacion(resultado, obj, respuesta, mensaje); //Tratamos los datos en un metodo aparte
+                respuesta = HacerLaOperacion(resultado, obj, respuesta, mensaje); //Tratamos los datos en un metodo aparte
             }
 
-            enviarRespuesta(respuesta, handler);
+            EnviarRespuesta(respuesta, handler);
         }
 
         //Ejecutamos la operacion recibida de uno de los clientes, retornamos la respuesta, que sera enviada de vuelta al cliente.
-        private static string hacerLaOperacion(double resultado, DatosOperacion obj, string respuesta, string mensaje)
+        private static string HacerLaOperacion(double resultado, DatosOperacion obj, string respuesta, string mensaje)
         {
             //Pasan los datos a su if correspondiente y se hace la operacion
-            if (obj.operacion == TipoOperacion.Suma)
+            if (obj.Operacion == TipoOperacion.Suma)
             {
                 resultado = obj.Operador1 + obj.Operador2;
                 respuesta = "La suma entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
 
                 Console.WriteLine("{0} -> {1}", mensaje, respuesta);
             }
-            else if (obj.operacion == TipoOperacion.Resta)
+            else if (obj.Operacion == TipoOperacion.Resta)
             {
                 resultado = obj.Operador1 - obj.Operador2;
                 respuesta = "La resta entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
 
                 Console.WriteLine("{0} -> {1}", mensaje, respuesta);
             }
-            else if (obj.operacion == TipoOperacion.Multiplicacion)
+            else if (obj.Operacion == TipoOperacion.Multiplicacion)
             {
                 resultado = obj.Operador1 * obj.Operador2;
                 respuesta = "La multiplicacion entre " + obj.Operador1 + " y " + obj.Operador2 + " daria como resultado = " + resultado;
 
                 Console.WriteLine("{0} -> {1}", mensaje, respuesta);
             }
-            else if (obj.operacion == TipoOperacion.Division)
+            else if (obj.Operacion == TipoOperacion.Division)
             {
                 //Si el segundo operador es 0, impedimos que se haga calculo alguno
                 if (obj.Operador2 == 0.0)
@@ -101,7 +101,7 @@ namespace Calculator.Servidor
             return respuesta;
         }
 
-        private static void enviarRespuesta(string respuesta, Socket handler)
+        private static void EnviarRespuesta(string respuesta, Socket handler)
         {
             var cacheRespuesta = Encoding.UTF8.GetBytes(respuesta);
             handler.Send(cacheRespuesta); //Se envia la respuesta al cliente

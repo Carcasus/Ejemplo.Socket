@@ -15,7 +15,7 @@ namespace Calculator.Cliente
             double operando1 = 0;
             double operando2 = 0;
 
-            var resultado = "";
+            ObjetoRespuesta resultado = new ObjetoRespuesta();
 
             Console.WriteLine("Escriba la operacion a realizar (add, sub, plus o div):");
             Console.WriteLine("------------------------\n");
@@ -34,15 +34,15 @@ namespace Calculator.Cliente
             }
 
             //Una vez declarado el operador y los numeros operandos, se pasara a una de las cuatro opciones en el metodo aparte
-            resultado = PosiblesOperadores(operador, operando1, operando2, resultado);
+            resultado = (ObjetoRespuesta)PosiblesOperadores(operador, operando1, operando2, resultado);
 
-            Console.WriteLine(resultado);
+            Console.WriteLine(resultado.Respuesta);
             Console.WriteLine("___________________________________________________");
             Console.Write("Pulse cualquier tecla para cerrar la ejecucion de la consola...");
             Console.ReadKey();
         }
 
-        private static string PosiblesOperadores(string operador, double operando1, double operando2, string resultado)
+        private static object PosiblesOperadores(string operador, double operando1, double operando2, ObjetoRespuesta resultado)
         {
             if (operador == "add")
             {
@@ -53,7 +53,7 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     Operacion = TipoOperacion.Suma
                 };
-                resultado = EnviaMensajeAsync(operacion); //Se envia al metodo principal (y al cliente), el resultado tratado lo devolvera a esta linea y saldra del if
+                resultado = (ObjetoRespuesta)EnviaMensajeAsync(operacion); //Se envia al metodo principal (y al cliente), el resultado tratado lo devolvera a esta linea y saldra del if
             }
             else if (operador == "sub")
             {
@@ -63,7 +63,7 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     Operacion = TipoOperacion.Resta
                 };
-                resultado = EnviaMensajeAsync(operacion);
+                resultado = (ObjetoRespuesta)EnviaMensajeAsync(operacion);
             }
             else if (operador == "plus")
             {
@@ -73,7 +73,7 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     Operacion = TipoOperacion.Multiplicacion
                 };
-                resultado = EnviaMensajeAsync(operacion);
+                resultado = (ObjetoRespuesta)EnviaMensajeAsync(operacion);
             }
             else if (operador == "div")
             {
@@ -83,16 +83,16 @@ namespace Calculator.Cliente
                     Operador2 = operando2,
                     Operacion = TipoOperacion.Division
                 };
-                resultado = EnviaMensajeAsync(operacion);
+                resultado = (ObjetoRespuesta)EnviaMensajeAsync(operacion);
             }
             else
                 Console.WriteLine("Valores de operacion no validos");
             return resultado;
         }
 
-        static string EnviaMensajeAsync(DatosOperacion operacion)
+        static object EnviaMensajeAsync(DatosOperacion operacion)
         {
-            var resultado = "";
+            ObjetoRespuesta resultado = new ObjetoRespuesta();
             try
             {
                 IPHostEntry host = Dns.GetHostEntry("localhost");
@@ -106,7 +106,7 @@ namespace Calculator.Cliente
                 try
                 {
                     //Ponemos en metodo aparte toda la conexion (envio y recibimiento) del mensaje
-                    resultado = ConexionServidor(sender, remoteEP, resultado, operacion); 
+                    resultado = (ObjetoRespuesta)ConexionServidor(sender, remoteEP, resultado, operacion); 
                 }
                 catch (ArgumentNullException ane)
                 {
@@ -128,7 +128,7 @@ namespace Calculator.Cliente
             return resultado;
         }
 
-        private static String ConexionServidor(Socket sender, IPEndPoint remoteEP, string resultado, DatosOperacion operacion)
+        private static object ConexionServidor(Socket sender, IPEndPoint remoteEP, ObjetoRespuesta resultado, DatosOperacion operacion)
         {
             // Connect to Remote EndPoint
             sender.Connect(remoteEP);
@@ -144,18 +144,18 @@ namespace Calculator.Cliente
             // Se envian los datos a traves del socket.
             int bytesSendOperador = sender.Send(cacheEnvioOperacion); //Pasar el objeto serializado
 
-            resultado = RetornoDesdeServidor(sender, resultado); //Recibimos el resultado desde el servidor en este metodo
+            resultado = (ObjetoRespuesta)RetornoDesdeServidor(sender, resultado); //Recibimos el resultado desde el servidor en este metodo
             return resultado;
         }
 
-        private static String RetornoDesdeServidor(Socket sender, string resultado)
+        private static object RetornoDesdeServidor(Socket sender, ObjetoRespuesta resultado)
         {
             // Recibimos respuesta desde el servidor.
             byte[] bufferRec = new byte[1024];
             int bytesRec1 = sender.Receive(bufferRec);
 
             //Deserializamos el mensaje recibido
-            resultado = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
+            resultado.Respuesta = Encoding.UTF8.GetString(bufferRec, 0, bytesRec1);
             // cerramos el socket.
             sender.Shutdown(SocketShutdown.Both);
             sender.Close();

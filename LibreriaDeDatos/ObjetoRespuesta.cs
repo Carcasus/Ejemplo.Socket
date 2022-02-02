@@ -8,7 +8,14 @@ namespace LibreriaDeDatos
 {
     public class ObjetoRespuesta
     {
+        public ObjetoRespuesta(double respuesta, string descripcion)
+        {
+            Respuesta = respuesta;
+            Descripcion = descripcion;
+        }
+
         public DatosOperacion DatosOperacion { get; set; }
-        public String Respuesta { get; set; }
+        public Double Respuesta { get; set; }
+        public String Descripcion { get; set; }
     }
 }
